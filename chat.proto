@@ -1,0 +1,97 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+message ChatMessage {
+  string sender = 1;
+  string message = 2;
+}
+
+message JoinRequest {
+  string sender = 1;
+}
+
+message JoinResponse {
+  string status = 1;
+  string message = 2;
+}
+
+message StreamRequest {
+  string sender = 1;
+}
+
+message AuthRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AuthResponse {
+  string status = 1;
+  string message = 2;
+}
+
+message HistoryRequest {
+  string sender = 1;
+}
+
+message HistoryResponse {
+  repeated ChatMessage messages = 1;
+}
+
+message CheckUsersRequest {
+    string sender = 1;
+}
+
+message CheckUsersResponse {
+    int32 userCount = 1;
+}
+
+message ListActiveUsersRequest {
+  // This request does not need any fields
+}
+
+message ListActiveUsersResponse {
+  repeated string usernames = 1;
+}
+
+message StringList {
+  repeated string values = 1;
+}
+
+
+message SendHistoryRequest {
+  map<string, StringList> messageHistory = 1;
+}
+
+message AckResponse {
+    string ack = 1;
+}
+
+
+service ChatService {
+  // Sends a join request to the server.
+  rpc JoinChat(JoinRequest) returns (JoinResponse) {}
+
+  // Sends a message to the chat.
+  rpc SendMessage(ChatMessage) returns (google.protobuf.Empty) {}
+
+  // Stream for receiving chat messages.
+  rpc ChatStream(StreamRequest) returns (stream ChatMessage) {}
+
+  // User registration and login.
+  rpc Authenticate(AuthRequest) returns (AuthResponse) {}
+
+  rpc GetHistory(HistoryRequest) returns (HistoryResponse) {}
+
+  rpc CheckUsers(CheckUsersRequest) returns (CheckUsersResponse) {}
+  //list the active usrs
+  rpc ListActiveUsers(ListActiveUsersRequest) returns (ListActiveUsersResponse) {}
+
+  rpc SendHistory(SendHistoryRequest) returns (AckResponse);
+  
+ }
+
+
+service BackupService {
+  rpc BackupHistory(SendHistoryRequest) returns (AckResponse) {}
+}
+
